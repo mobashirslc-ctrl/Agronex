@@ -1,0 +1,10 @@
+{
+  "description": "Connects consumers with locally sourced agro food products like vegetables, honey, and ghee, ensuring authenticity and supporting local farmers.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

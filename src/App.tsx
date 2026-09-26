@@ -224,27 +224,32 @@ function App() {
               </div>
             ))}
           </div>
-          <div className="product-grid">
-            {visibleProducts.map((product) => (
-              <div className="product-card" key={product.name} onClick={() => setSelectedProduct(product)}>
-                <div className={`product-image product-${product.image}`}>
-                  <div className="fresh-badge"><Icon name="leaf" size={13} /> Fresh</div>
-                </div>
-                <div className="product-info">
-                  <div className="product-category">{product.category}</div>
-                  <div className="product-name">{product.name}</div>
-                  <div className="farmer-source"><Icon name="user" size={16} /> Sourced from verified farmers</div>
-                  <div className="product-footer">
-                    <div className="coming"><span /> Coming soon</div>
-                    <div className="round-arrow"><Icon name="arrow" size={17} /></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          {!visibleProducts.length && (
-            <div className="empty-state">More products in this category are being prepared for launch.</div>
-          )}
+ <div className="product-grid">
+  {visibleProducts.map((product) => (
+    <div className="product-card" key={product.name} onClick={() => setSelectedProduct(product)}>
+      <div className="product-image" style={{ position: 'relative', overflow: 'hidden' }}>
+        <img 
+          src={`/image/${product.image}.png`} 
+          alt={product.name} 
+          style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+        />
+        <div className="fresh-badge"><Icon name="leaf" size={13} /> Fresh</div>
+      </div>
+      <div className="product-info">
+        <div className="product-category">{product.category}</div>
+        <div className="product-name">{product.name}</div>
+        <div className="farmer-source"><Icon name="user" size={16} /> Sourced from verified farmers</div>
+        <div className="product-footer">
+          <div className="coming"><span /> Coming soon</div>
+          <div className="round-arrow"><Icon name="arrow" size={17} /></div>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+{!visibleProducts.length && (
+  <div className="empty-state">More products in this category are being prepared for launch.</div>
+)}
         </section>
 
         <section className="prelaunch">

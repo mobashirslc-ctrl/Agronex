@@ -224,14 +224,18 @@ function App() {
               </div>
             ))}
           </div>
- <div className="product-grid">
+<div className="product-grid">
   {visibleProducts.map((product) => (
     <div className="product-card" key={product.name} onClick={() => setSelectedProduct(product)}>
-      <div className="product-image" style={{ position: 'relative', overflow: 'hidden' }}>
+      <div className="product-image" style={{ position: 'relative', overflow: 'hidden', height: '200px', backgroundColor: '#f4f4f4' }}>
         <img 
           src={`/image/${product.image}.png`} 
           alt={product.name} 
-          style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          onError={(e) => {
+            // যদি কোনো কারণে .png না পেয়ে অন্য ফরম্যাট হয়
+            console.log("Image failed to load: ", product.image);
+          }}
         />
         <div className="fresh-badge"><Icon name="leaf" size={13} /> Fresh</div>
       </div>

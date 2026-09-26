@@ -226,11 +226,13 @@ function App() {
           </div>
 <div className="product-grid">
   {visibleProducts.map((product) => {
-    // এখানে নামের মিল না থাকলে সঠিক ফাইল নেম ম্যাপিং করে দেওয়া হলো
+    // এখানে ফাইলের নামের অমিল দূর করার জন্য ম্যাপিং করা হলো
     let imgFileName = product.image;
-    if (imgFileName === 'oil') imgFileName = 'mustardoil';
-    
-return (
+    if (imgFileName === 'oil') {
+      imgFileName = 'mustardoil';
+    }
+
+    return (
       <div className="product-card" key={product.name} onClick={() => setSelectedProduct(product)}>
         <div className="product-image" style={{ position: 'relative', overflow: 'hidden', height: '200px', backgroundColor: '#f4f4f4' }}>
           <img 
@@ -238,7 +240,7 @@ return (
             alt={product.name} 
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onError={(e) => {
-              // যদি png না পেয়ে jfif বা অন্য ফরম্যাট হয় (যেমন sesame oil)
+              // তিলের তেলের ক্ষেত্রে .jfif ফাইল ব্যবহারের জন্য
               if (imgFileName.includes('sesame') || imgFileName === 'sesame') {
                 e.currentTarget.src = `${import.meta.env.BASE_URL}images/sesame oil bottle with sesame seeds.jfif`;
               } else {

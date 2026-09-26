@@ -86,18 +86,21 @@ body { margin: 0; background: var(--white); color: var(--ink); font-family: "DM 
 .product-grid { max-width: 1440px; margin: auto; display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
 .product-card { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--white); cursor: pointer; transition: transform .25s, box-shadow .25s; }
 .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
-.product-image { height: 230px; position: relative; background-color: #fbfcf7; background-size: contain; background-position: center; background-repeat: no-repeat; }
+.product-image { height: 230px; position: relative; background-color: #fbfcf7; background-size: cover; background-position: center; background-repeat: no-repeat; }
 .fresh-badge { position: absolute; left: 14px; top: 14px; padding: 7px 10px; border: 1px solid #dce9d9; border-radius: 100px; background: rgba(255,255,255,.9); color: var(--green-700); font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 5px; }
-.product-tomato { background-image: url("./assets/tomato.png"); }
-.product-chui { background-image: url("./assets/chui.png"); }
-.product-bitter { background-image: url("./assets/bitter.png"); }
-.product-papaya { background-image: url("./assets/papaya.png"); }
-.product-rui { background-image: url("./assets/rui.png"); }
-.product-banana { background-image: url("./assets/banana.png"); }
-.product-oil { background-image: url("./assets/oil.png"); }
-.product-turmeric { background-image: url("./assets/turmeric.png"); }
-.product-honey { background-image: url("./assets/honey.png"); }
-.product-gur { background-image: url("./assets/gur.png"); }
+
+/* Product Images Updated with Reliable Links */
+.product-tomato { background-image: url("https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80"); }
+.product-chui { background-image: url("https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=600&q=80"); }
+.product-bitter { background-image: url("https://images.unsplash.com/photo-1563583723603-f111f4864478?auto=format&fit=crop&w=600&q=80"); }
+.product-papaya { background-image: url("https://images.unsplash.com/photo-1617112848923-cc2234394a8d?auto=format&fit=crop&w=600&q=80"); }
+.product-rui { background-image: url("https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=600&q=80"); }
+.product-banana { background-image: url("https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80"); }
+.product-oil { background-image: url("https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80"); }
+.product-turmeric { background-image: url("https://images.unsplash.com/photo-1615485500704-8e990f9900f1?auto=format&fit=crop&w=600&q=80"); }
+.product-honey { background-image: url("https://images.unsplash.com/photo-1587049352847-4a222e784d38?auto=format&fit=crop&w=600&q=80"); }
+.product-gur { background-image: url("https://images.unsplash.com/photo-1599785209707-a456fc1337bb?auto=format&fit=crop&w=600&q=80"); }
+
 .product-info { padding: 19px 18px 17px; }
 .product-category { color: var(--green-600); text-transform: uppercase; font-size: 10px; font-weight: 800; letter-spacing: .12em; }
 .product-name { font-family: "Manrope"; font-size: 17px; font-weight: 700; margin-top: 7px; }

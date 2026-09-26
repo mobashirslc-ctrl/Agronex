@@ -89,28 +89,27 @@ body { margin: 0; background: var(--white); color: var(--ink); font-family: "DM 
 .product-image { height: 230px; position: relative; background-color: #fbfcf7; background-size: cover; background-position: center; background-repeat: no-repeat; }
 .fresh-badge { position: absolute; left: 14px; top: 14px; padding: 7px 10px; border: 1px solid #dce9d9; border-radius: 100px; background: rgba(255,255,255,.9); color: var(--green-700); font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 5px; }
 
-.product-amlaki { background-image: url("/images/amlaki.png"); }
-.product-banana { background-image: url("/images/banana.png"); }
-.product-bitter { background-image: url("/images/bitter.png"); }
-.product-chalkumra { background-image: url("/images/chalkumra.png"); }
-.product-chui { background-image: url("/images/chui.png"); }
-.product-coconutoil { background-image: url("/images/coconutoil.png"); }
-.product-cucumber { background-image: url("/images/cucumber.png"); }
-.product-ginger { background-image: url("/images/ginger.png"); }
-.product-gur { background-image: url("/images/gur.png"); }
-.product-honey { background-image: url("/images/honey.png"); }
-.product-kathal { background-image: url("/images/kathal.png"); }
-.product-lebu { background-image: url("/images/lebu.png"); }
-.product-mustardoil { background-image: url("/images/mustardoil.png"); }
-.product-pangash { background-image: url("/images/pangash.png"); }
-.product-papaya { background-image: url("/images/papaya.png"); }
-.product-ripepapaya { background-image: url("/images/ripepapaya.png"); }
-.product-rui { background-image: url("/images/rui.png"); }
-.product-sajne { background-image: url("/images/sajne.png"); }
-.product-sesame { background-image: url("/images/sesame oil bottle with sesame seeds.jfif"); }
-.product-tomato { background-image: url("/images/tomato.png"); }
-.product-turmeric { background-image: url("/images/turmeric.png"); }
-
+.product-amlaki { background-image: url("/images/amlaki.png"); background-size: cover; background-position: center; }
+.product-banana { background-image: url("/images/banana.png"); background-size: cover; background-position: center; }
+.product-bitter { background-image: url("/images/bitter.png"); background-size: cover; background-position: center; }
+.product-chalkumra { background-image: url("/images/chalkumra.png"); background-size: cover; background-position: center; }
+.product-chui { background-image: url("/images/chui.png"); background-size: cover; background-position: center; }
+.product-coconutoil { background-image: url("/images/coconutoil.png"); background-size: cover; background-position: center; }
+.product-cucumber { background-image: url("/images/cucumber.png"); background-size: cover; background-position: center; }
+.product-ginger { background-image: url("/images/ginger.png"); background-size: cover; background-position: center; }
+.product-gur { background-image: url("/images/gur.png"); background-size: cover; background-position: center; }
+.product-honey { background-image: url("/images/honey.png"); background-size: cover; background-position: center; }
+.product-kathal { background-image: url("/images/kathal.png"); background-size: cover; background-position: center; }
+.product-lebu { background-image: url("/images/lebu.png"); background-size: cover; background-position: center; }
+.product-mustardoil { background-image: url("/images/mustardoil.png"); background-size: cover; background-position: center; }
+.product-pangash { background-image: url("/images/pangash.png"); background-size: cover; background-position: center; }
+.product-papaya { background-image: url("/images/papaya.png"); background-size: cover; background-position: center; }
+.product-ripepapaya { background-image: url("/images/ripepapaya.png"); background-size: cover; background-position: center; }
+.product-rui { background-image: url("/images/rui.png"); background-size: cover; background-position: center; }
+.product-sajne { background-image: url("/images/sajne.png"); background-size: cover; background-position: center; }
+.product-sesame { background-image: url("/images/sesame oil bottle with sesame seeds.jfif"); background-size: cover; background-position: center; }
+.product-tomato { background-image: url("/images/tomato.png"); background-size: cover; background-position: center; }
+.product-turmeric { background-image: url("/images/turmeric.png"); background-size: cover; background-position: center; }
 .product-info { padding: 19px 18px 17px; }
 .product-category { color: var(--green-600); text-transform: uppercase; font-size: 10px; font-weight: 800; letter-spacing: .12em; }
 .product-name { font-family: "Manrope"; font-size: 17px; font-weight: 700; margin-top: 7px; }

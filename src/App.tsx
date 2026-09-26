@@ -225,31 +225,41 @@ function App() {
             ))}
           </div>
 <div className="product-grid">
-  {visibleProducts.map((product) => (
-    <div className="product-card" key={product.name} onClick={() => setSelectedProduct(product)}>
-      <div className="product-image" style={{ position: 'relative', overflow: 'hidden', height: '200px', backgroundColor: '#f4f4f4' }}>
-        <img 
-          src={`/image/${product.image}.png`} 
-          alt={product.name} 
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          onError={(e) => {
-            // যদি কোনো কারণে .png না পেয়ে অন্য ফরম্যাট হয়
-            console.log("Image failed to load: ", product.image);
-          }}
-        />
-        <div className="fresh-badge"><Icon name="leaf" size={13} /> Fresh</div>
-      </div>
-      <div className="product-info">
-        <div className="product-category">{product.category}</div>
-        <div className="product-name">{product.name}</div>
-        <div className="farmer-source"><Icon name="user" size={16} /> Sourced from verified farmers</div>
-        <div className="product-footer">
-          <div className="coming"><span /> Coming soon</div>
-          <div className="round-arrow"><Icon name="arrow" size={17} /></div>
+  {visibleProducts.map((product) => {
+    // এখানে নামের মিল না থাকলে সঠিক ফাইল নেম ম্যাপিং করে দেওয়া হলো
+    let imgFileName = product.image;
+    if (imgFileName === 'oil') imgFileName = 'mustardoil';
+    
+    return (
+      <div className="product-card" key={product.name} onClick={() => setSelectedProduct(product)}>
+        <div className="product-image" style={{ position: 'relative', overflow: 'hidden', height: '200px', backgroundColor: '#f4f4f4' }}>
+          <img 
+            src={`/image/${imgFileName}.png`} 
+            alt={product.name} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            onError={(e) => {
+              // যদি png না পেয়ে jfif বা অন্য ফরম্যাট হয় (যেমন sesame oil)
+              if (imgFileName.includes('sesame') || imgFileName === 'sesame') {
+                e.currentTarget.src = `/image/sesame oil bottle with sesame seeds.jfif`;
+              } else {
+                console.log("Failed to load image for: ", product.name);
+              }
+            }}
+          />
+          <div className="fresh-badge"><Icon name="leaf" size={13} /> Fresh</div>
+        </div>
+        <div className="product-info">
+          <div className="product-category">{product.category}</div>
+          <div className="product-name">{product.name}</div>
+          <div className="farmer-source"><Icon name="user" size={16} /> Sourced from verified farmers</div>
+          <div className="product-footer">
+            <div className="coming"><span /> Coming soon</div>
+            <div className="round-arrow"><Icon name="arrow" size={17} /></div>
+          </div>
         </div>
       </div>
-    </div>
-  ))}
+    );
+  })}
 </div>
 {!visibleProducts.length && (
   <div className="empty-state">More products in this category are being prepared for launch.</div>

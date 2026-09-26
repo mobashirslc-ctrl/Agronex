@@ -239,13 +239,10 @@ function App() {
             alt={product.name} 
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onError={(e) => {
-              // Jodi png file load na hoy, tahole .jpg ba .jfif try korbe
               if (imgFileName.includes('sesame') || imgFileName === 'sesame') {
                 e.currentTarget.src = `${import.meta.env.BASE_URL}images/sesame oil bottle with sesame seeds.jfif`;
-              } else if (!e.currentTarget.src.endsWith('.jpg')) {
-                e.currentTarget.src = `${import.meta.env.BASE_URL}images/${imgFileName}.jpg`;
               } else {
-                console.log("Image failed to load for: ", product.name);
+                console.log("Failed to load image for: ", product.name);
               }
             }}
           />

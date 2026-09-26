@@ -226,7 +226,6 @@ function App() {
           </div>
 <div className="product-grid">
   {visibleProducts.map((product) => {
-    // এখানে ফাইলের নামের অমিল দূর করার জন্য ম্যাপিং করা হলো
     let imgFileName = product.image;
     if (imgFileName === 'oil') {
       imgFileName = 'mustardoil';
@@ -240,11 +239,13 @@ function App() {
             alt={product.name} 
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onError={(e) => {
-              // তিলের তেলের ক্ষেত্রে .jfif ফাইল ব্যবহারের জন্য
+              // Jodi png file load na hoy, tahole .jpg ba .jfif try korbe
               if (imgFileName.includes('sesame') || imgFileName === 'sesame') {
                 e.currentTarget.src = `${import.meta.env.BASE_URL}images/sesame oil bottle with sesame seeds.jfif`;
+              } else if (!e.currentTarget.src.endsWith('.jpg')) {
+                e.currentTarget.src = `${import.meta.env.BASE_URL}images/${imgFileName}.jpg`;
               } else {
-                console.log("Failed to load image for: ", product.name);
+                console.log("Image failed to load for: ", product.name);
               }
             }}
           />

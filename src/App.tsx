@@ -234,13 +234,13 @@ return (
       <div className="product-card" key={product.name} onClick={() => setSelectedProduct(product)}>
         <div className="product-image" style={{ position: 'relative', overflow: 'hidden', height: '200px', backgroundColor: '#f4f4f4' }}>
           <img 
-            src={`${import.meta.env.BASE_URL}image/${imgFileName}.png`} 
+            src={`${import.meta.env.BASE_URL}images/${imgFileName}.png`} 
             alt={product.name} 
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onError={(e) => {
               // যদি png না পেয়ে jfif বা অন্য ফরম্যাট হয় (যেমন sesame oil)
               if (imgFileName.includes('sesame') || imgFileName === 'sesame') {
-                e.currentTarget.src = `${import.meta.env.BASE_URL}image/sesame oil bottle with sesame seeds.jfif`;
+                e.currentTarget.src = `${import.meta.env.BASE_URL}images/sesame oil bottle with sesame seeds.jfif`;
               } else {
                 console.log("Failed to load image for: ", product.name);
               }

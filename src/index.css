@@ -109,8 +109,7 @@ body { margin: 0; background: var(--white); color: var(--ink); font-family: "DM 
 .product-sajne { background-image: url("/images/sajne.png"); background-size: cover; background-position: center; }
 .product-sesame { background-image: url("/images/sesame oil bottle with sesame seeds.jfif"); background-size: cover; background-position: center; }
 .product-tomato { background-image: url("/images/tomato.png"); background-size: cover; background-position: center; }
-.product-turmeric { background-image: url("/images/turmeric.png"); background-size: cover; background-position: center; }
-.product-info { padding: 19px 18px 17px; }
+.product-turmeric { background-image: url("/images/turmeric.png"); background-size: cover; background-position: center; }product-info { padding: 19px 18px 17px; }
 .product-category { color: var(--green-600); text-transform: uppercase; font-size: 10px; font-weight: 800; letter-spacing: .12em; }
 .product-name { font-family: "Manrope"; font-size: 17px; font-weight: 700; margin-top: 7px; }
 .farmer-source { color: var(--muted); font-size: 11px; margin-top: 11px; display: flex; align-items: center; gap: 6px; }

@@ -1,4 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { db } from './firebase'; // apnar firebase.ts file-er path onujayi thik kore nin
+import { 
+  collection, 
+  doc, 
+  setDoc, 
+  deleteDoc, 
+  serverTimestamp, 
+  onSnapshot,
+  query
+} from 'firebase/firestore';
 
 interface ProductItem {
   id: string;
@@ -6,7 +16,12 @@ interface ProductItem {
   category: string;
   price: string;
   description: string;
+  farmerSource: string;
+  origin: string;
+  qualityAssurance: string;
+  freshness: string;
   previewUrl: string | null;
+  createdAt?: any;
 }
 
 export default function AdminUpload() {
@@ -14,91 +29,157 @@ export default function AdminUpload() {
   const [category, setCategory] = useState('Vegetables');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
+  const [farmerSource, setFarmerSource] = useState('Verified AgroNexus partner');
+  const [origin, setOrigin] = useState('Bangladesh');
+  const [qualityAssurance, setQualityAssurance] = useState('Multi-point checked');
+  const [freshness, setFreshness] = useState('Farm-to-center in under 24h');
+  
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // প্রোডাক্ট লিস্ট ও এডিটিং মোডের জন্য স্টেট
+  // Product list and editing states
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
 
-  // Handle image selection and create local preview
+  // Real-time Firebase Firestore data fetch
+  useEffect(() => {
+    const q = query(collection(db, 'products'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const productList: ProductItem[] = [];
+      snapshot.forEach((docSnap) => {
+        productList.push({ id: docSnap.id, ...docSnap.data() } as ProductItem);
+      });
+      setProducts(productList);
+    }, (error) => {
+      console.error("Error fetching products: ", error);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Handle image selection, auto-resize, compress to prevent Firestore 1MB limit, and create Base64 preview
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setImageFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 400; 
+          const scaleSize = MAX_WIDTH / img.width;
+          
+          canvas.width = img.width > MAX_WIDTH ? MAX_WIDTH : img.width;
+          canvas.height = img.width > MAX_WIDTH ? img.height * scaleSize : img.height;
+
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          setPreviewUrl(compressedBase64);
+        };
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      const finalImageUrl = previewUrl || existingImageUrl;
+
+      const productData = {
+        name: productName,
+        category,
+        price: price || 'Not specified',
+        description: description || 'Carefully sourced from verified growers and handled through the AgroNexus quality chain for freshness you can trust.',
+        farmerSource: farmerSource || 'Verified AgroNexus partner',
+        origin: origin || 'Bangladesh',
+        qualityAssurance: qualityAssurance || 'Multi-point checked',
+        freshness: freshness || 'Farm-to-center in under 24h',
+        previewUrl: finalImageUrl || '',
+      };
+
       if (editingId) {
-        // এডিট মোড: বিদ্যমান প্রোডাক্ট আপডেট করা
-        setProducts(
-          products.map((p) =>
-            p.id === editingId
-              ? {
-                  ...p,
-                  name: productName,
-                  category,
-                  price: price || 'Not specified',
-                  description,
-                  previewUrl: previewUrl || p.previewUrl,
-                }
-              : p
-          )
-        );
-        alert('Product updated successfully!');
+        // Edit Mode: Update existing product in Firestore
+        const productRef = doc(db, 'products', editingId);
+        await setDoc(productRef, {
+          ...productData,
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+
+        alert('Product updated successfully in Firebase!');
         setEditingId(null);
+        setExistingImageUrl(null);
       } else {
-        // নতুন প্রোডাক্ট যোগ করা
-        const newProduct: ProductItem = {
-          id: Date.now().toString(),
-          name: productName,
-          category,
-          price: price || 'Not specified',
-          description,
-          previewUrl,
-        };
-        setProducts([newProduct, ...products]);
-        alert('Product published successfully!');
+        // New Product Mode: Add to Firestore
+        const newProductRef = doc(collection(db, 'products'));
+        await setDoc(newProductRef, {
+          ...productData,
+          createdAt: serverTimestamp(),
+        });
+
+        alert('Product published successfully to live database!');
       }
 
-      // ফর্ম রিসেট করা
+      // Reset Form
       setProductName('');
       setPrice('');
       setDescription('');
+      setFarmerSource('Verified AgroNexus partner');
+      setOrigin('Bangladesh');
+      setQualityAssurance('Multi-point checked');
+      setFreshness('Farm-to-center in under 24h');
       setImageFile(null);
       setPreviewUrl(null);
+    } catch (error: any) {
+      console.error("Error saving product: ", error);
+      alert(`Failed to save product: ${error.message || 'Please check console'}`);
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
-  // এডিট করার জন্য ফর্মে ডেটা লোড করা
+  // Load data for editing
   const handleEditProduct = (item: ProductItem) => {
     setEditingId(item.id);
     setProductName(item.name);
     setCategory(item.category);
     setPrice(item.price === 'Not specified' ? '' : item.price);
-    setDescription(item.description);
+    setDescription(item.description || '');
+    setFarmerSource(item.farmerSource || 'Verified AgroNexus partner');
+    setOrigin(item.origin || 'Bangladesh');
+    setQualityAssurance(item.qualityAssurance || 'Multi-point checked');
+    setFreshness(item.freshness || 'Farm-to-center in under 24h');
     setPreviewUrl(item.previewUrl);
+    setExistingImageUrl(item.previewUrl);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // প্রোডাক্ট ডিলিট বা রিমুভ করার ফাংশন
-  const handleDeleteProduct = (id: string) => {
-    if (window.confirm('Are you sure you want to remove this product?')) {
-      setProducts(products.filter((p) => p.id !== id));
-      if (editingId === id) {
-        setEditingId(null);
-        setProductName('');
-        setPrice('');
-        setDescription('');
-        setPreviewUrl(null);
+  // Delete product from Firestore
+  const handleDeleteProduct = async (id: string) => {
+    if (window.confirm('Are you sure you want to remove this product from the live database?')) {
+      try {
+        await deleteDoc(doc(db, 'products', id));
+        if (editingId === id) {
+          setEditingId(null);
+          setProductName('');
+          setPrice('');
+          setDescription('');
+          setPreviewUrl(null);
+          setExistingImageUrl(null);
+        }
+        alert('Product removed successfully!');
+      } catch (error) {
+        console.error("Error deleting product: ", error);
+        alert('Failed to delete product.');
       }
     }
   };
@@ -114,7 +195,7 @@ export default function AdminUpload() {
           <div style={{ borderBottom: '1px solid #e5e7eb', paddingBottom: '15px', marginBottom: '25px' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827', margin: '0 0 5px 0' }}>Agronex Admin Portal</h2>
             <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-              {editingId ? 'Editing Product Mode' : 'Upload and manage products for display.'}
+              {editingId ? 'Editing Product Mode (Live Firebase)' : 'Upload and manage products for live display.'}
             </p>
           </div>
 
@@ -177,6 +258,53 @@ export default function AdminUpload() {
               />
             </div>
 
+            {/* Additional Details Fields for Modal */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Farmer Source</label>
+                <input 
+                  type="text" 
+                  value={farmerSource} 
+                  onChange={(e) => setFarmerSource(e.target.value)} 
+                  placeholder="e.g. Verified AgroNexus partner" 
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px', outline: 'none' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Origin</label>
+                <input 
+                  type="text" 
+                  value={origin} 
+                  onChange={(e) => setOrigin(e.target.value)} 
+                  placeholder="e.g. Bangladesh" 
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px', outline: 'none' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Quality Assurance</label>
+                <input 
+                  type="text" 
+                  value={qualityAssurance} 
+                  onChange={(e) => setQualityAssurance(e.target.value)} 
+                  placeholder="e.g. Multi-point checked" 
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px', outline: 'none' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Freshness Timeline</label>
+                <input 
+                  type="text" 
+                  value={freshness} 
+                  onChange={(e) => setFreshness(e.target.value)} 
+                  placeholder="e.g. Farm-to-center in under 24h" 
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px', outline: 'none' }}
+                />
+              </div>
+            </div>
+
             {/* Image Upload & Preview */}
             <div>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Product Image</label>
@@ -213,7 +341,7 @@ export default function AdminUpload() {
                   transition: 'background 0.2s'
                 }}
               >
-                {loading ? 'Processing...' : editingId ? 'Update Product' : 'Publish Product'}
+                {loading ? 'Saving to Database...' : editingId ? 'Update Product' : 'Publish Product'}
               </button>
 
               {editingId && (
@@ -224,7 +352,12 @@ export default function AdminUpload() {
                     setProductName('');
                     setPrice('');
                     setDescription('');
+                    setFarmerSource('Verified AgroNexus partner');
+                    setOrigin('Bangladesh');
+                    setQualityAssurance('Multi-point checked');
+                    setFreshness('Farm-to-center in under 24h');
                     setPreviewUrl(null);
+                    setExistingImageUrl(null);
                   }}
                   style={{ 
                     padding: '12px 20px', 
@@ -250,7 +383,7 @@ export default function AdminUpload() {
           <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#111827', margin: '0 0 15px 0' }}>Manage Live Products ({products.length})</h3>
           
           {products.length === 0 ? (
-            <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>No products uploaded in this session yet.</p>
+            <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>No products found in live database yet.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               {products.map((item) => (

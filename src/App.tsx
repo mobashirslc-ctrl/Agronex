@@ -1,6 +1,9 @@
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
 import AdminUpload from "./AdminUpload";
+import { db } from "./firebase";
+import { collection, onSnapshot } from "firebase/firestore";
+import CustomerFeedback from './CustomerFeedback';
+import WhatsAppButton from './WhatsAppButton';
 
 type IconName =
   | "arrow"
@@ -74,19 +77,6 @@ function Action({
   );
 }
 
-const products = [
-  { name: "Fresh Farm Tomato", short: "Tomato", category: "Vegetables", image: "tomato" },
-  { name: "Premium Chui Jhal", short: "Chui Jhal", category: "Vegetables", image: "chui" },
-  { name: "Fresh Bitter Gourd", short: "Bitter Gourd", category: "Vegetables", image: "bitter" },
-  { name: "Green Papaya", short: "Papaya", category: "Vegetables", image: "papaya" },
-  { name: "River Rui Fish", short: "Rui Fish", category: "Fish", image: "rui" },
-  { name: "Farm Fresh Banana", short: "Banana", category: "Fruits", image: "banana" },
-  { name: "Pure Mustard Oil", short: "Mustard Oil", category: "Oil Products", image: "oil" },
-  { name: "Golden Turmeric", short: "Turmeric", category: "Crops", image: "turmeric" },
-  { name: "Mustard Flower Honey", short: "Mustard Honey", category: "Honey", image: "honey" },
-  { name: "Traditional Patali Gur", short: "Patali Gur", category: "Date Jaggery", image: "gur" },
-];
-
 const categories = ["All Products", "Vegetables", "Fish", "Fruits", "Oil Products", "Crops", "Honey"];
 
 function Logo({ inverse = false }: { inverse?: boolean }) {
@@ -114,13 +104,47 @@ function SectionTitle({
 }
 
 function App() {
-  // ১. ঠিক এই জায়গায় অ্যাডমিন প্যানেলের পাথ চেকারটি বসিয়ে দিন
+  // ১. Admin panel path checker
   const path = window.location.pathname;
   if (path.includes('/admin')) {
     return <AdminUpload />;
   }
 
-  // ২. এরপর আপনার বাকি স্টেটগুলো থাকবে
+  // ২. Products state and Firebase fetching logic
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "products"), (snapshot) => {
+      const fetchedProducts = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      
+      if (fetchedProducts.length > 0) {
+        setProducts(fetchedProducts);
+      } else {
+        // Fallback static products
+        setProducts([
+          { name: "Fresh Farm Tomato", short: "Tomato", category: "Vegetables", image: "tomato" },
+          { name: "Premium Chui Jhal", short: "Chui Jhal", category: "Vegetables", image: "chui" },
+          { name: "Fresh Bitter Gourd", short: "Bitter Gourd", category: "Vegetables", image: "bitter" },
+          { name: "Green Papaya", short: "Papaya", category: "Vegetables", image: "papaya" },
+          { name: "River Rui Fish", short: "Rui Fish", category: "Fish", image: "rui" },
+          { name: "Farm Fresh Banana", short: "Banana", category: "Fruits", image: "banana" },
+          { name: "Pure Mustard Oil", short: "Mustard Oil", category: "Oil Products", image: "oil" },
+          { name: "Golden Turmeric", short: "Turmeric", category: "Crops", image: "turmeric" },
+          { name: "Mustard Flower Honey", short: "Mustard Honey", category: "Honey", image: "honey" },
+          { name: "Traditional Patali Gur", short: "Patali Gur", category: "Date Jaggery", image: "gur" },
+        ]);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // ৩. Other states
   const [activeCategory, setActiveCategory] = useState("All Products");
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<(typeof products)[number] | null>(null);
@@ -131,6 +155,7 @@ function App() {
       : products.filter((product) => product.category === activeCategory);
 
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+
   return (
     <div className="site-shell">
       <header className="header">
@@ -232,46 +257,47 @@ function App() {
               </div>
             ))}
           </div>
-<div className="product-grid">
-  {visibleProducts.map((product) => {
-    let imgFileName = product.image;
-    if (imgFileName === 'oil') {
-      imgFileName = 'mustardoil';
-    }
 
-    return (
-      <div className="product-card" key={product.name} onClick={() => setSelectedProduct(product)}>
-        <div className="product-image" style={{ position: 'relative', overflow: 'hidden', height: '200px', backgroundColor: '#f4f4f4' }}>
-          <img 
-            src={`${import.meta.env.BASE_URL}images/${imgFileName}.png`} 
-            alt={product.name} 
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            onError={(e) => {
-              if (imgFileName.includes('sesame') || imgFileName === 'sesame') {
-                e.currentTarget.src = `${import.meta.env.BASE_URL}images/sesame oil bottle with sesame seeds.jfif`;
-              } else {
-                console.log("Failed to load image for: ", product.name);
+          <div className="product-grid">
+            {visibleProducts.map((product) => {
+              let imgFileName = product.image;
+              if (imgFileName === 'oil') {
+                imgFileName = 'mustardoil';
               }
-            }}
-          />
-          <div className="fresh-badge"><Icon name="leaf" size={13} /> Fresh</div>
-        </div>
-        <div className="product-info">
-          <div className="product-category">{product.category}</div>
-          <div className="product-name">{product.name}</div>
-          <div className="farmer-source"><Icon name="user" size={16} /> Sourced from verified farmers</div>
-          <div className="product-footer">
-            <div className="coming"><span /> Coming soon</div>
-            <div className="round-arrow"><Icon name="arrow" size={17} /></div>
+
+              return (
+                <div className="product-card" key={product.name} onClick={() => setSelectedProduct(product)}>
+                  <div className="product-image" style={{ position: 'relative', overflow: 'hidden', height: '200px', backgroundColor: '#f4f4f4' }}>
+                    <img 
+                      src={product.previewUrl || `${import.meta.env.BASE_URL}images/${imgFileName}.png`} 
+                      alt={product.name} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => {
+                        if (imgFileName?.includes('sesame') || imgFileName === 'sesame') {
+                          e.currentTarget.src = `${import.meta.env.BASE_URL}images/sesame oil bottle with sesame seeds.jfif`;
+                        } else {
+                          console.log("Failed to load image for: ", product.name);
+                        }
+                      }}
+                    />
+                    <div className="fresh-badge"><Icon name="leaf" size={13} /> Fresh</div>
+                  </div>
+                  <div className="product-info">
+                    <div className="product-category">{product.category}</div>
+                    <div className="product-name">{product.name}</div>
+                    <div className="farmer-source"><Icon name="user" size={16} /> Sourced from verified farmers</div>
+                    <div className="product-footer">
+                      <div className="coming"><span /> Coming soon</div>
+                      <div className="round-arrow"><Icon name="arrow" size={17} /></div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        </div>
-      </div>
-    );
-  })}
-</div>
-{!visibleProducts.length && (
-  <div className="empty-state">More products in this category are being prepared for launch.</div>
-)}
+          {!visibleProducts.length && (
+            <div className="empty-state">More products in this category are being prepared for launch.</div>
+          )}
         </section>
 
         <section className="prelaunch">
@@ -359,26 +385,10 @@ function App() {
           </div>
         </section>
 
-        <section className="testimonials section">
-          <SectionTitle eyebrow="TRUSTED BY FAMILIES" title="Food that feels good to bring home" />
-          <div className="testimonial-grid">
-            {[
-              ["NR", "Nusrat Rahman", "Dhaka", "The quality feels fresh and dependable. I also love knowing where the food is coming from."],
-              ["MA", "Mehedi Alam", "Chattogram", "A modern idea our families genuinely need—safe products and a supply chain we can trust."],
-              ["ST", "Sadia Tasnim", "Khulna", "The focus on farmers and traceability makes AgroNexus different from a typical grocery shop."],
-            ].map(([initials, name, location, review], index) => (
-              <div className={`testimonial-card ${index === 1 ? "testimonial-featured" : ""}`} key={name}>
-                <div className="stars">{Array.from({ length: 5 }).map((_, i) => <Icon key={i} name="star" size={16} />)}</div>
-                <div className="review">“{review}”</div>
-                <div className="customer">
-                  <div className="avatar">{initials}</div>
-                  <div><div className="customer-name">{name}</div><div className="customer-location">{location}, Bangladesh</div></div>
-                </div>
-              </div>
-            ))}
-          </div>
+        
+<section className="feedback-section section" id="feedback">
+          <CustomerFeedback />
         </section>
-
         <section className="about section" id="about">
           <div className="about-intro">
             <SectionTitle eyebrow="WHY AGRONEXUS" title="Trust is grown at every step" />
@@ -409,7 +419,7 @@ function App() {
           <div className="footer-links">
             <div><strong>Explore</strong><span>Products</span><span>Our supply chain</span><span>Quality promise</span><span>About us</span></div>
             <div><strong>Partner</strong><span>For farmers</span><span>Collection centers</span><span>Institutional buyers</span><span>Careers</span></div>
-            <div><strong>Contact</strong><span>hello@agronexus.com</span><span>+880 1700 000 000</span><span>Dhaka, Bangladesh</span><span>Facebook &nbsp; LinkedIn</span></div>
+            <div><strong>Contact</strong><span>hello@agronexus.com</span><span>+880 1700 000 000</span><span>Utholi Bazar,Shibaloy, ManikGanj, Bangladesh</span><span>Facebook &nbsp; LinkedIn</span></div>
           </div>
           <div className="newsletter">
             <strong>Fresh updates, thoughtfully shared.</strong>
@@ -423,29 +433,50 @@ function App() {
           <span>Grown with care in Bangladesh</span>
         </div>
       </footer>
-
-      {selectedProduct && (
+{selectedProduct && (
         <div className="modal-backdrop" onClick={() => setSelectedProduct(null)}>
           <div className="product-modal" onClick={(event) => event.stopPropagation()}>
             <div className="modal-close" onClick={() => setSelectedProduct(null)} role="button" tabIndex={0}><Icon name="close" /></div>
-            <div className={`modal-product-image product-image product-${selectedProduct.image}`} />
+            
+            <div className="modal-product-image" style={{ position: 'relative', overflow: 'hidden', height: '250px', backgroundColor: '#f4f4f4' }}>
+              <img 
+                src={selectedProduct.previewUrl || `${import.meta.env.BASE_URL}images/${selectedProduct.image === 'oil' ? 'mustardoil' : selectedProduct.image}.png`} 
+                alt={selectedProduct.name} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => {
+                  if (selectedProduct.image?.includes('sesame') || selectedProduct.image === 'sesame') {
+                    e.currentTarget.src = `${import.meta.env.BASE_URL}images/sesame oil bottle with sesame seeds.jfif`;
+                  } else {
+                    console.log("Failed to load modal image for: ", selectedProduct.name);
+                  }
+                }}
+              />
+            </div>
+
             <div className="modal-content">
               <div className="product-category">{selectedProduct.category}</div>
               <div className="modal-title">{selectedProduct.name}</div>
               <div className="coming modal-badge"><span /> Ordering coming soon</div>
-              <div className="modal-description">Carefully sourced from verified growers and handled through the AgroNexus quality chain for freshness you can trust.</div>
+              
+              {/* ডাইনামিক ডেসক্রিপশন */}
+              <div className="modal-description">
+                {selectedProduct.description || "Carefully sourced from verified growers and handled through the AgroNexus quality chain for freshness you can trust."}
+              </div>
+
               <div className="detail-list">
-                <div><span>Farmer source</span><strong>Verified AgroNexus partner</strong></div>
-                <div><span>Origin</span><strong>Bangladesh</strong></div>
-                <div><span>Quality assurance</span><strong>Multi-point checked</strong></div>
-                <div><span>Freshness</span><strong>Farm-to-center in under 24h</strong></div>
+                <div><span>Farmer source</span><strong>{selectedProduct.farmerSource || "Verified AgroNexus partner"}</strong></div>
+                <div><span>Origin</span><strong>{selectedProduct.origin || "Bangladesh"}</strong></div>
+                <div><span>Quality assurance</span><strong>{selectedProduct.qualityAssurance || "Multi-point checked"}</strong></div>
+                <div><span>Freshness</span><strong>{selectedProduct.freshness || "Farm-to-center in under 24h"}</strong></div>
               </div>
               <Action>Notify me at launch</Action>
             </div>
           </div>
         </div>
       )}
+      
     </div>
+
   );
 }
 

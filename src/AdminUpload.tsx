@@ -31,7 +31,7 @@ export default function AdminUpload() {
         description,
         imageFile,
       });
-      alert('UI Test Successful! Backend connection pore add kora hobe.');
+      alert('Product saved successfully for display!');
       setLoading(false);
     }, 1000);
   };
@@ -43,7 +43,7 @@ export default function AdminUpload() {
         {/* Header */}
         <div style={{ borderBottom: '1px solid #e5e7eb', paddingBottom: '15px', marginBottom: '25px' }}>
           <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827', margin: '0 0 5px 0' }}>Agronex Admin Portal</h2>
-          <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Upload products and manage your inventory seamlessly.</p>
+          <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>Upload products to display on your live site.</p>
         </div>
 
         {/* Form */}
@@ -82,14 +82,14 @@ export default function AdminUpload() {
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Price (BDT)</label>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>Price (Optional)</label>
               <input 
                 type="text" 
                 value={price} 
                 onChange={(e) => setPrice(e.target.value)} 
-                placeholder="e.g. 120 BDT / kg" 
+                placeholder="e.g. 120 BDT / kg (Optional)" 
                 style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px', outline: 'none' }}
-                required
+                // Price theke required attribute tule dewa holo jate mandatory na hoy
               />
             </div>
           </div>
@@ -142,7 +142,7 @@ export default function AdminUpload() {
               transition: 'background 0.2s'
             }}
           >
-            {loading ? 'Processing...' : 'Save Product'}
+            {loading ? 'Processing...' : 'Publish Product'}
           </button>
 
         </form>

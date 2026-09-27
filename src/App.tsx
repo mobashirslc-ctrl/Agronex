@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useState } from "react";
+import AdminUpload from "./AdminUpload";
 
 type IconName =
   | "arrow"
@@ -112,6 +114,13 @@ function SectionTitle({
 }
 
 function App() {
+  // ১. ঠিক এই জায়গায় অ্যাডমিন প্যানেলের পাথ চেকারটি বসিয়ে দিন
+  const path = window.location.pathname;
+  if (path.includes('/admin')) {
+    return <AdminUpload />;
+  }
+
+  // ২. এরপর আপনার বাকি স্টেটগুলো থাকবে
   const [activeCategory, setActiveCategory] = useState("All Products");
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<(typeof products)[number] | null>(null);
@@ -122,7 +131,6 @@ function App() {
       : products.filter((product) => product.category === activeCategory);
 
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-
   return (
     <div className="site-shell">
       <header className="header">

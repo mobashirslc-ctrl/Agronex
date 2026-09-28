@@ -4,7 +4,7 @@ import { db } from "./firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import CustomerFeedback from './CustomerFeedback';
 import WhatsAppButton from './WhatsAppButton';
-import logoImg from './assets/logo.png.png';
+import logoImg from './assets/logo.png';
 type IconName =
   | "arrow"
   | "check"

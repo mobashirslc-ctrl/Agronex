@@ -79,10 +79,27 @@ function Action({
 
 const categories = ["All Products", "Vegetables", "Fish", "Fruits", "Oil Products", "Crops", "Honey"];
 
+// লোগো সাইজ বড় করা এবং কর্নার রাউন্ড শেপ করার জন্য স্টাইল আপডেট করা হয়েছে
 function Logo({ inverse = false }: { inverse?: boolean }) {
-  return <div aria-label="AgroNexus" className={`brand-logo ${inverse ? "brand-logo-inverse" : ""}`} role="img" />;
+  return (
+    <div className={`brand-logo-container ${inverse ? "brand-logo-inverse" : ""}`} style={{ display: 'flex', alignItems: 'center' }}>
+      <img 
+        src={`${import.meta.env.BASE_URL}images/logo.png.png`} 
+        alt="AgroNexus Logo" 
+        style={{ 
+          height: '58px', // Logo-r size aro boro kora holo
+          width: 'auto', 
+          objectFit: 'contain',
+          borderRadius: '10px', // Corner gulo round rakhar jonno
+          overflow: 'hidden'
+        }} 
+        onError={(e) => {
+          e.currentTarget.style.display = 'none';
+        }}
+      />
+    </div>
+  );
 }
-
 function SectionTitle({
   eyebrow,
   title,
@@ -104,13 +121,11 @@ function SectionTitle({
 }
 
 function App() {
-  // ১. Admin panel path checker
   const path = window.location.pathname;
   if (path.includes('/admin')) {
     return <AdminUpload />;
   }
 
-  // ২. Products state and Firebase fetching logic
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -124,7 +139,6 @@ function App() {
       if (fetchedProducts.length > 0) {
         setProducts(fetchedProducts);
       } else {
-        // Fallback static products
         setProducts([
           { name: "Fresh Farm Tomato", short: "Tomato", category: "Vegetables", image: "tomato" },
           { name: "Premium Chui Jhal", short: "Chui Jhal", category: "Vegetables", image: "chui" },
@@ -144,7 +158,6 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // ৩. Other states
   const [activeCategory, setActiveCategory] = useState("All Products");
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<(typeof products)[number] | null>(null);
@@ -385,10 +398,10 @@ function App() {
           </div>
         </section>
 
-        
-<section className="feedback-section section" id="feedback">
+        <section className="feedback-section section" id="feedback">
           <CustomerFeedback />
         </section>
+        
         <section className="about section" id="about">
           <div className="about-intro">
             <SectionTitle eyebrow="WHY AGRONEXUS" title="Trust is grown at every step" />
@@ -433,7 +446,8 @@ function App() {
           <span>Grown with care in Bangladesh</span>
         </div>
       </footer>
-{selectedProduct && (
+
+      {selectedProduct && (
         <div className="modal-backdrop" onClick={() => setSelectedProduct(null)}>
           <div className="product-modal" onClick={(event) => event.stopPropagation()}>
             <div className="modal-close" onClick={() => setSelectedProduct(null)} role="button" tabIndex={0}><Icon name="close" /></div>
@@ -458,7 +472,6 @@ function App() {
               <div className="modal-title">{selectedProduct.name}</div>
               <div className="coming modal-badge"><span /> Ordering coming soon</div>
               
-              {/* ডাইনামিক ডেসক্রিপশন */}
               <div className="modal-description">
                 {selectedProduct.description || "Carefully sourced from verified growers and handled through the AgroNexus quality chain for freshness you can trust."}
               </div>
@@ -474,9 +487,7 @@ function App() {
           </div>
         </div>
       )}
-      
     </div>
-
   );
 }
 

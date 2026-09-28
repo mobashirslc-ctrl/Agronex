@@ -4,7 +4,7 @@ import { db } from "./firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import CustomerFeedback from './CustomerFeedback';
 import WhatsAppButton from './WhatsAppButton';
-
+import logoImg from './assets/logo.png.png';
 type IconName =
   | "arrow"
   | "check"
@@ -84,18 +84,15 @@ function Logo({ inverse = false }: { inverse?: boolean }) {
   return (
     <div className={`brand-logo-container ${inverse ? "brand-logo-inverse" : ""}`} style={{ display: 'flex', alignItems: 'center' }}>
       <img 
-        src={`${import.meta.env.BASE_URL}images/logo.png.png`} 
+        src={logoImg} 
         alt="AgroNexus Logo" 
         style={{ 
-          height: '58px', // Logo-r size aro boro kora holo
+          height: '58px', 
           width: 'auto', 
           objectFit: 'contain',
-          borderRadius: '10px', // Corner gulo round rakhar jonno
+          borderRadius: '10px',
           overflow: 'hidden'
         }} 
-        onError={(e) => {
-          e.currentTarget.style.display = 'none';
-        }}
       />
     </div>
   );

@@ -81,19 +81,28 @@ const categories = ["All Products", "Vegetables", "Fish", "Fruits", "Oil Product
 
 // লোগো সাইজ বড় করা এবং কর্নার রাউন্ড শেপ করার জন্য স্টাইল আপডেট করা হয়েছে
 function Logo({ inverse = false }: { inverse?: boolean }) {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <div className={`brand-logo-container ${inverse ? "brand-logo-inverse" : ""}`} style={{ display: 'flex', alignItems: 'center' }}>
-      <img 
-        src={logoImg} 
-        alt="AgroNexus Logo" 
-        style={{ 
-          height: '58px', 
-          width: 'auto', 
-          objectFit: 'contain',
-          borderRadius: '10px',
-          overflow: 'hidden'
-        }} 
-      />
+      {!imgError ? (
+        <img 
+          src={logoImg} 
+          alt="AgroNexus Logo" 
+          style={{ 
+            height: '58px', 
+            width: 'auto', 
+            objectFit: 'contain',
+            borderRadius: '10px',
+            overflow: 'hidden'
+          }} 
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span style={{ fontSize: '24px', fontWeight: 'bold', color: inverse ? '#fff' : '#1b4332', letterSpacing: '-0.5px' }}>
+          AgroNexus
+        </span>
+      )}
     </div>
   );
 }

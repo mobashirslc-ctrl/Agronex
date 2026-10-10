@@ -217,8 +217,8 @@ function App() {
             <div className="trust-row">
               {[
                 ["leaf", "Fresh from farm"],
-                ["shield", "Quality checked"],
-                ["user", "Trusted farmers"],
+                ["shield", "Quality assured"],
+                ["user", "Professional team"],
               ].map(([icon, text]) => (
                 <div className="trust-item" key={text}>
                   <Icon name={icon as IconName} size={20} /><span>{text}</span>

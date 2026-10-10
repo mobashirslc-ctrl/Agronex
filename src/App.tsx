@@ -192,7 +192,7 @@ function App() {
           <div className="header-actions">
             <div className="language"><Icon name="globe" size={17} /> EN <Icon name="chevron" size={15} /></div>
             <Action kind="ghost">Login</Action>
-            <Action onClick={() => scrollTo("farmers")}>Partner with us</Action>
+            
           </div>
           <div className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} role="button" tabIndex={0}>
             <Icon name={menuOpen ? "close" : "menu"} />

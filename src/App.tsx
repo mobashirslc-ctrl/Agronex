@@ -4,7 +4,7 @@ import { db } from "./firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import CustomerFeedback from './CustomerFeedback';
 import WhatsAppButton from './WhatsAppButton';
-import logoImg from './assets/logo.png';
+
 type IconName =
   | "arrow"
   | "check"
@@ -87,7 +87,7 @@ function Logo({ inverse = false }: { inverse?: boolean }) {
     <div className={`brand-logo-container ${inverse ? "brand-logo-inverse" : ""}`} style={{ display: 'flex', alignItems: 'center' }}>
       {!imgError ? (
         <img 
-          src={logoImg} 
+          src="/images/logo.png" 
           alt="AgroNexus Logo" 
           style={{ 
             height: '58px', 
@@ -142,22 +142,7 @@ function App() {
         ...doc.data(),
       }));
       
-      if (fetchedProducts.length > 0) {
-        setProducts(fetchedProducts);
-      } else {
-        setProducts([
-          { name: "Fresh Farm Tomato", short: "Tomato", category: "Vegetables", image: "tomato" },
-          { name: "Premium Chui Jhal", short: "Chui Jhal", category: "Vegetables", image: "chui" },
-          { name: "Fresh Bitter Gourd", short: "Bitter Gourd", category: "Vegetables", image: "bitter" },
-          { name: "Green Papaya", short: "Papaya", category: "Vegetables", image: "papaya" },
-          { name: "River Rui Fish", short: "Rui Fish", category: "Fish", image: "rui" },
-          { name: "Farm Fresh Banana", short: "Banana", category: "Fruits", image: "banana" },
-          { name: "Pure Mustard Oil", short: "Mustard Oil", category: "Oil Products", image: "oil" },
-          { name: "Golden Turmeric", short: "Turmeric", category: "Crops", image: "turmeric" },
-          { name: "Mustard Flower Honey", short: "Mustard Honey", category: "Honey", image: "honey" },
-          { name: "Traditional Patali Gur", short: "Patali Gur", category: "Date Jaggery", image: "gur" },
-        ]);
-      }
+      setProducts(fetchedProducts);
       setLoading(false);
     });
 
@@ -181,21 +166,29 @@ function App() {
         <div className="header-inner">
           <Logo />
           <nav className={`nav ${menuOpen ? "nav-open" : ""}`}>
-            {["Overview", "Products", "Solutions", "Farmers", "About", "Contact"].map((item) => (
-              <div
-                className="nav-item"
-                key={item}
-                onClick={() => {
-                  scrollTo(item === "Overview" ? "home" : item.toLowerCase());
-                  setMenuOpen(false);
-                }}
-                role="link"
-                tabIndex={0}
-              >
-                {item}
-              </div>
-            ))}
-          </nav>
+  {[
+    { label: "Overview", target: "home" },
+    { label: "Products", target: "products" },
+    { label: "Order status", target: "order-status" },
+    { label: "Farmers", target: "farmers" },
+    { label: "Gallery", target: "gallery" },
+    { label: "About", target: "about" },
+    { label: "Contact", target: "contact" }
+  ].map((item) => (
+    <div
+      className="nav-item"
+      key={item.label}
+      onClick={() => {
+        scrollTo(item.target);
+        setMenuOpen(false);
+      }}
+      role="link"
+      tabIndex={0}
+    >
+      {item.label}
+    </div>
+  ))}
+</nav>
           <div className="header-actions">
             <div className="language"><Icon name="globe" size={17} /> EN <Icon name="chevron" size={15} /></div>
             <Action kind="ghost">Login</Action>
@@ -219,7 +212,7 @@ function App() {
             </div>
             <div className="hero-actions">
               <Action kind="light" icon="arrow" onClick={() => scrollTo("products")}>Explore products</Action>
-              <Action kind="secondary" onClick={() => scrollTo("farmers")}>Become a partner</Action>
+              
             </div>
             <div className="trust-row">
               {[
@@ -240,21 +233,19 @@ function App() {
           </div>
         </section>
 
-        <section className="impact-strip" aria-label="Company impact">
-          {[
-            ["1,200+", "Farmers in our network"],
-            ["14", "Collection regions"],
-            ["32", "Quality checkpoints"],
-            ["<24h", "Farm to collection"],
-          ].map(([value, label]) => (
-            <div className="impact-item" key={label}>
-              <div className="impact-value">{value}</div>
-              <div className="impact-label">{label}</div>
-            </div>
-          ))}
-        </section>
-
-        <section className="products section" id="products">
+       <div style={{
+  backgroundColor: '#f4f6f0',
+  padding: '16px 24px',
+  textAlign: 'center',
+  fontSize: '16px',
+  fontWeight: '600',
+  color: '#1b4332',
+  borderTop: '1px solid #e0e5d8',
+  borderBottom: '1px solid #e0e5d8'
+}}>
+  In overall cooperation: BADC, BSCIC
+</div>
+<section className="products section" id="products">
           <div className="section-top">
             <SectionTitle
               eyebrow="THE MARKETPLACE"
@@ -336,51 +327,34 @@ function App() {
           </div>
         </section>
 
-        <section className="journey section" id="solutions">
-          <SectionTitle
-            eyebrow="FROM SOIL TO SHELF"
-            title="One connected, transparent journey"
-            copy="We bring visibility and care to every movement in the supply chain."
-          />
-          <div className="journey-grid">
-            {[
-              ["01", "user", "Farmer", "Responsible growers and fair prices."],
-              ["02", "package", "Collection center", "Fast aggregation close to farms."],
-              ["03", "shield", "Quality checking", "Multi-point safety and freshness checks."],
-              ["04", "leaf", "Smart packaging", "Clean, careful and low-waste handling."],
-              ["05", "truck", "Customer delivery", "Fresh food, delivered with confidence."],
-            ].map(([number, icon, title, copy], index) => (
-              <div className="journey-step" key={title}>
-                <div className="step-number">{number}</div>
-                <div className="step-icon"><Icon name={icon as IconName} size={26} /></div>
-                <div className="step-title">{title}</div>
-                <div className="step-copy">{copy}</div>
-                {index < 4 && <div className="step-connector"><Icon name="arrow" size={17} /></div>}
-              </div>
-            ))}
+        {/* --- 1. Added Order Status Section --- */}
+        <section className="section" id="order-status" style={{ padding: '80px 20px', minHeight: '300px', backgroundColor: '#fcfdfa' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <SectionTitle
+              eyebrow="TRACK YOUR SHIPMENT"
+              title="Order Status"
+              copy="Track your agricultural shipments, supply progress, and delivery status here."
+            />
+            <div style={{ marginTop: '24px', color: '#555' }}>
+              Order tracking details and live status tools will be available once online ordering opens.
+            </div>
           </div>
         </section>
 
-        <section className="farmers" id="farmers">
-          <div className="farmer-visual">
-            <img alt="Farmer caring for crops in a green field" src={farmerImage} />
-            <div className="farmer-quote">
-              <div className="quote-mark">“</div>
-              <div>Better access. Fairer value. Stronger farms.</div>
-            </div>
-          </div>
-          <div className="farmer-content">
+        
+
+       
+        {/* --- 2. Added Gallery Section --- */}
+        <section className="section" id="gallery" style={{ padding: '80px 20px', minHeight: '300px', backgroundColor: '#f4f6f0' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <SectionTitle
-              eyebrow="GROWING TOGETHER"
-              title="Empowering farmers through technology"
-              copy="AgroNexus helps growers build resilient livelihoods while bringing safer food to more families."
+              eyebrow="VISUAL HIGHLIGHTS"
+              title="Gallery"
+              copy="Explore highlights, farm moments, and behind-the-scenes stories from our supply network."
             />
-            <div className="benefit-grid">
-              {["Fair market price", "Direct customer connection", "Faster payments", "Digital supply chain", "Better farming support", "Transparent demand"].map((item) => (
-                <div className="benefit" key={item}><span><Icon name="check" size={15} /></span>{item}</div>
-              ))}
+            <div style={{ marginTop: '24px', color: '#555' }}>
+              Photo and video collections from our partner farms and collection hubs are coming soon.
             </div>
-            <Action icon="arrow">Join our farmer network</Action>
           </div>
         </section>
 
